@@ -73,6 +73,10 @@ if __name__ == "__main__":
         uint64_XP = uint64_XP.reshape(-1, B >> 6)
 
         # Output
+        print(f"CP shape {CP.shape}, filename {randomized_centroid_path}")
+        print(f"uint64_XP shape {uint64_XP.shape}, filename {RN_path}")
+        print(f"x0 shape {x0.shape}, filename {x0_path}")
+        print(f"P shape {P.shape}, filename {projection_path}")
         to_fvecs(randomized_centroid_path, CP)
         to_Ivecs(RN_path                 , uint64_XP)
         to_fvecs(x0_path                 , x0)

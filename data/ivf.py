@@ -1,4 +1,3 @@
-
 import numpy as np
 import faiss
 import struct
@@ -8,14 +7,13 @@ from utils.io import *
 source = './'
 
 if __name__ == '__main__':
-
     dataset = 'sift'
     print(f"Clustering - {dataset}")
     # path
     path = os.path.join(source, dataset)
     data_path = os.path.join(path, f'{dataset}_base.fvecs')
     X = read_fvecs(data_path)
-    D = X.shape[1]    
+    D = X.shape[1]
     K = 4096
     centroids_path = os.path.join(path, f'{dataset}_centroid_{K}.fvecs')
     dist_to_centroid_path = os.path.join(path, f'{dataset}_dist_to_centroid_{K}.fvecs')
@@ -28,6 +26,11 @@ if __name__ == '__main__':
     centroids = index.quantizer.reconstruct_n(0, index.nlist)
     dist_to_centroid, cluster_id = index.quantizer.search(X, 1)
     dist_to_centroid = dist_to_centroid ** 0.5
+    print("X shape", X.shape)
+    print("dimensionality", D)
+    print("centroid shape", centroids.shape)
+    print("dist_to_centroid shape", dist_to_centroid.shape)
+    print("cluster_id shape", cluster_id.shape)
 
     to_fvecs(dist_to_centroid_path, dist_to_centroid)
     to_ivecs(cluster_id_path, cluster_id)
