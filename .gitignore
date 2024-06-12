@@ -9,3 +9,6 @@
 .idea
 *.pyc
 /cmake-build-debug/
+/data/sift.tar.gz
+/data/siftsmall.tar.gz
+/index/

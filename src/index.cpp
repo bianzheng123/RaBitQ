@@ -21,7 +21,7 @@ int main(int argc, char * argv[]) {
 
         // Indexing Path 
         {"dataset",                     required_argument, 0, 'd'},
-        {"source",                      required_argument, 0, 's'},
+        {"username",                      required_argument, 0, 'u'},
     };
 
     int ind;
@@ -29,60 +29,65 @@ int main(int argc, char * argv[]) {
     opterr = 1;    //getopt error message (off: 0)
 
     char dataset[256]="";
-    char source[256]="";
-    
+    char username[256]="";
+
     while(iarg != -1){
-        iarg = getopt_long(argc, argv, "d:s:", longopts, &ind);
+        iarg = getopt_long(argc, argv, "d:u:", longopts, &ind);
         switch (iarg){
             case 'd':
                 if(optarg){
                     strcpy(dataset, optarg);
                 }
                 break;
-            case 's':
+            case 'u':
                 if(optarg){
-                    strcpy(source, optarg);
+                    strcpy(username, optarg);
                 }
                 break;
         }
     }
+    char data_path[256] = "";
+    char index_path[256] = "";
+    sprintf(data_path, "/home/%s/RaBitQ/data/%s", username, dataset);
+    sprintf(index_path, "/home/%s/RaBitQ/index/%s", username, dataset);
+
 
     
     // ==============================================================================================================
     // Load Data
-    char data_path[256] = "";
-    char index_path[256] = "";
+    char base_data_filename[256] = "";
+    char result_index_filename[256] = "";
     char centroid_path[256] = "";
     char x0_path[256] = "";
     char dist_to_centroid_path[256] = "";
     char cluster_id_path[256] = "";
     char binary_path[256] = "";
 
-    sprintf(data_path, "%s%s_base.fvecs", source, dataset);
-    Matrix<float> X(data_path);
+    sprintf(base_data_filename, "%s/%s_base.fvecs", data_path, dataset);
+    Matrix<float> X(base_data_filename);
     
-    sprintf(centroid_path, "%sRandCentroid_C%d_B%d.fvecs", source, numC, BB);
+    sprintf(centroid_path, "%s/RandCentroid_C%d_B%d.fvecs", index_path, numC, BB);
     Matrix<float> C(centroid_path);
 
-    sprintf(x0_path, "%sx0_C%d_B%d.fvecs", source, numC, BB);
+    sprintf(x0_path, "%s/x0_C%d_B%d.fvecs", index_path, numC, BB);
     Matrix<float> x0(x0_path);
 
-    sprintf(dist_to_centroid_path, "%s%s_dist_to_centroid_%d.fvecs", source, dataset, numC);
+    sprintf(dist_to_centroid_path, "%s/%s_dist_to_centroid_%d.fvecs", index_path, dataset, numC);
     Matrix<float> dist_to_centroid(dist_to_centroid_path);
     
-    sprintf(cluster_id_path, "%s%s_cluster_id_%d.ivecs", source, dataset, numC);
+    sprintf(cluster_id_path, "%s/%s_cluster_id_%d.ivecs", index_path, dataset, numC);
     Matrix<uint32_t> cluster_id(cluster_id_path);
     
-    sprintf(binary_path, "%sRandNet_C%d_B%d.Ivecs", source, numC, BB);
+    sprintf(binary_path, "%s/RandNet_C%d_B%d.Ivecs", index_path, numC, BB);
     Matrix<uint64_t> binary(binary_path);
 
-    sprintf(index_path, "%sivfrabitq%d_B%d.index", source, numC, BB);
+    sprintf(result_index_filename, "%s/ivfrabitq%d_B%d.index", index_path, numC, BB);
     std::cerr << "Loading Succeed!" << std::endl << std::endl;
     // ==============================================================================================================
 
     IVFRN<DIM, BB> ivf(X, C, dist_to_centroid, x0, cluster_id, binary);
 
-    ivf.save(index_path);
+    ivf.save(result_index_filename);
 
     return 0;
 }

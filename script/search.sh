@@ -1,20 +1,19 @@
 
 
-
-source='./data'
-data='sift'
+username='bianzheng'
+dataset='sift'
 C=4096
 B=128
 D=128
 k=100
 
-g++ -march=core-avx2 -Ofast -o ./bin/search_${data} ./src/search.cpp -I ./src/ -D BB=${B} -D DIM=${D} -D numC=${C} -D B_QUERY=4 -D FAST_SCAN
+g++ -march=core-avx2 -Ofast -o ./bin/search_${dataset} ./src/search.cpp -I ./src/ -D BB=${B} -D DIM=${D} -D numC=${C} -D B_QUERY=4 -D FAST_SCAN
 
-result_path=./results
+result_path=/home/${username}/RaBitQ/results
 mkdir ${result_path}
 
-res="${result_path}/${data}/"
+res="${result_path}/${dataset}/"
 
-mkdir "$result_path/${data}/"
+mkdir "$result_path/${dataset}/"
 
-./bin/search_${data} -d ${data} -r ${res} -k ${k} -s "$source/$data/"
+./bin/search_${dataset} -d ${dataset} -r ${res} -k ${k} -u ${username}
