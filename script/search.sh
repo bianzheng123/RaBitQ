@@ -16,4 +16,6 @@ res="${result_path}/${dataset}/"
 
 mkdir "$result_path/${dataset}/"
 
-./bin/search_${dataset} -d ${dataset} -r ${res} -k ${k} -u ${username}
+./bin/search_${dataset} -d ${dataset} -r ${res} -k ${k} -u ${username} -o yes
+
+./bin/search_${dataset} -d ${dataset} -r ${res} -k ${k} -u ${username} -o no

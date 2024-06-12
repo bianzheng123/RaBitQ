@@ -44,7 +44,7 @@ if __name__ == "__main__":
     config_l = {
         'local': {
             'username': 'bianzheng',
-            'dataset_l': ['siftsmall']
+            'dataset_l': ['siftsmall', 'sift', 'deep', 'glove']
         }
     }
     host_name = 'local'
@@ -78,7 +78,7 @@ if __name__ == "__main__":
 
         X_pad = np.pad(X, ((0, 0), (0, MAX_BD - D)), 'constant')
         centroids_pad = np.pad(centroids, ((0, 0), (0, MAX_BD - D)), 'constant')
-        np.random.seed(0)
+        # np.random.seed(0)
         cluster_id = np.squeeze(cluster_id)
 
         # The inverse of an orthogonal matrix equals to its transpose.
@@ -92,6 +92,10 @@ if __name__ == "__main__":
         print(f"uint64_XP shape {uint64_XP.shape}, filename {RN_path}")
         print(f"x0 shape {x0.shape}, filename {x0_path}")
         print(f"P shape {P.shape}, filename {projection_path}")
+        os.system(f'rm {randomized_centroid_path}')
+        os.system(f'rm {RN_path}')
+        os.system(f'rm {x0_path}')
+        os.system(f'rm {projection_path}')
         to_fvecs(randomized_centroid_path, CP)
         to_Ivecs(RN_path, uint64_XP)
         to_fvecs(x0_path, x0)
@@ -100,7 +104,7 @@ if __name__ == "__main__":
         # --------------------------------------------------------------------------
         # generate the identity matrix
 
-        os.makedirs(os.path.join(index_path, 'no_rotation'))
+        os.makedirs(os.path.join(index_path, 'no_rotation'), exist_ok=True)
         projection_path = os.path.join(index_path, 'no_rotation', f'P_C{C}_B{B}.fvecs')
         randomized_centroid_path = os.path.join(index_path, 'no_rotation', f'RandCentroid_C{C}_B{B}.fvecs')
         RN_path = os.path.join(index_path, 'no_rotation', f'RandNet_C{C}_B{B}.Ivecs')

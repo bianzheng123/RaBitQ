@@ -16,7 +16,7 @@ if __name__ == '__main__':
     config_l = {
         'local': {
             'username': 'bianzheng',
-            'dataset_l': ['siftsmall']
+            'dataset_l': ['siftsmall', 'sift', 'deep', 'glove']
         }
     }
     host_name = 'local'
