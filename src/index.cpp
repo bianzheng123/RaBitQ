@@ -89,5 +89,26 @@ int main(int argc, char * argv[]) {
 
     ivf.save(result_index_filename);
 
+    // ==============================================================================================================
+    // No rotation
+
+    sprintf(centroid_path, "%s/no_rotation/RandCentroid_C%d_B%d.fvecs", index_path, numC, BB);
+    Matrix<float> C_n(centroid_path);
+
+    sprintf(x0_path, "%s/no_rotation/x0_C%d_B%d.fvecs", index_path, numC, BB);
+    Matrix<float> x0_n(x0_path);
+
+    sprintf(binary_path, "%s/no_rotation/RandNet_C%d_B%d.Ivecs", index_path, numC, BB);
+    Matrix<uint64_t> binary_n(binary_path);
+
+    sprintf(result_index_filename, "%s/no_rotation/ivfrabitq%d_B%d.index", index_path, numC, BB);
+    std::cerr << "Loading Succeed!" << std::endl << std::endl;
+    // ==============================================================================================================
+
+    //TODO, finish
+    IVFRN<DIM, BB> ivf_no_rotation(X, C_n, dist_to_centroid, x0_n, cluster_id, binary_n);
+
+    ivf_no_rotation.save(result_index_filename);
+
     return 0;
 }

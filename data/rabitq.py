@@ -19,11 +19,32 @@ def GenerateBinaryCode(X, P):
     return binary_XP, X0
 
 
+def GenerateIndex(P, X_pad, centroids_pad, cluster_id):
+    XP = np.dot(X_pad, P)
+    CP = np.dot(centroids_pad, P)
+    XP = XP - CP[cluster_id]
+    bin_XP = (XP > 0)
+
+    # The inner product between the data vector and the quantized data vector, i.e., <\bar o, o>.
+    x0 = np.sum(XP[:, :B] * (2 * bin_XP[:, :B] - 1) / B ** 0.5, axis=1, keepdims=True) / np.linalg.norm(XP, axis=1,
+                                                                                                        keepdims=True)
+
+    # To remove illy defined x0
+    # np.linalg.norm(XP, axis=1, keepdims=True) = 0 indicates that its estimated distance based on our method has no error.
+    # Thus, it should be good to set x0 as any finite non-zero number.
+    x0[~np.isfinite(x0)] = 0.8
+
+    bin_XP = bin_XP[:, :B].flatten()
+    uint64_XP = np.packbits(bin_XP.reshape(-1, 8, 8)[:, ::-1]).view(np.uint64)
+    uint64_XP = uint64_XP.reshape(-1, B >> 6)
+    return CP, uint64_XP, x0
+
+
 if __name__ == "__main__":
     config_l = {
         'local': {
             'username': 'bianzheng',
-            'dataset_l': ['sift']
+            'dataset_l': ['siftsmall']
         }
     }
     host_name = 'local'
@@ -58,35 +79,44 @@ if __name__ == "__main__":
         X_pad = np.pad(X, ((0, 0), (0, MAX_BD - D)), 'constant')
         centroids_pad = np.pad(centroids, ((0, 0), (0, MAX_BD - D)), 'constant')
         np.random.seed(0)
+        cluster_id = np.squeeze(cluster_id)
 
-        # The inverse of an orthogonal matrix equals to its transpose. 
+        # The inverse of an orthogonal matrix equals to its transpose.
         P = Orthogonal(MAX_BD)
         P = P.T
 
-        cluster_id = np.squeeze(cluster_id)
-        XP = np.dot(X_pad, P)
-        CP = np.dot(centroids_pad, P)
-        XP = XP - CP[cluster_id]
-        bin_XP = (XP > 0)
-
-        # The inner product between the data vector and the quantized data vector, i.e., <\bar o, o>.
-        x0 = np.sum(XP[:, :B] * (2 * bin_XP[:, :B] - 1) / B ** 0.5, axis=1, keepdims=True) / np.linalg.norm(XP, axis=1,
-                                                                                                            keepdims=True)
-
-        # To remove illy defined x0
-        # np.linalg.norm(XP, axis=1, keepdims=True) = 0 indicates that its estimated distance based on our method has no error.
-        # Thus, it should be good to set x0 as any finite non-zero number.  
-        x0[~np.isfinite(x0)] = 0.8
-
-        bin_XP = bin_XP[:, :B].flatten()
-        uint64_XP = np.packbits(bin_XP.reshape(-1, 8, 8)[:, ::-1]).view(np.uint64)
-        uint64_XP = uint64_XP.reshape(-1, B >> 6)
+        CP, uint64_XP, x0 = GenerateIndex(P, X_pad, centroids_pad, cluster_id)
 
         # Output
         print(f"CP shape {CP.shape}, filename {randomized_centroid_path}")
         print(f"uint64_XP shape {uint64_XP.shape}, filename {RN_path}")
         print(f"x0 shape {x0.shape}, filename {x0_path}")
         print(f"P shape {P.shape}, filename {projection_path}")
+        to_fvecs(randomized_centroid_path, CP)
+        to_Ivecs(RN_path, uint64_XP)
+        to_fvecs(x0_path, x0)
+        to_fvecs(projection_path, P)
+
+        # --------------------------------------------------------------------------
+        # generate the identity matrix
+
+        os.makedirs(os.path.join(index_path, 'no_rotation'))
+        projection_path = os.path.join(index_path, 'no_rotation', f'P_C{C}_B{B}.fvecs')
+        randomized_centroid_path = os.path.join(index_path, 'no_rotation', f'RandCentroid_C{C}_B{B}.fvecs')
+        RN_path = os.path.join(index_path, 'no_rotation', f'RandNet_C{C}_B{B}.Ivecs')
+        x0_path = os.path.join(index_path, 'no_rotation', f'x0_C{C}_B{B}.fvecs')
+
+        # The inverse of an orthogonal matrix equals to its transpose.
+        P = np.identity(MAX_BD)
+        P = P.T
+
+        CP, uint64_XP, x0 = GenerateIndex(P, X_pad, centroids_pad, cluster_id)
+
+        # Output
+        print(f"no_rotation CP shape {CP.shape}, filename {randomized_centroid_path}")
+        print(f"no_rotation uint64_XP shape {uint64_XP.shape}, filename {RN_path}")
+        print(f"no_rotation x0 shape {x0.shape}, filename {x0_path}")
+        print(f"no_rotation P shape {P.shape}, filename {projection_path}")
         to_fvecs(randomized_centroid_path, CP)
         to_Ivecs(RN_path, uint64_XP)
         to_fvecs(x0_path, x0)

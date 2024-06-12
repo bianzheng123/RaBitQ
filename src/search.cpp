@@ -142,7 +142,7 @@ int main(int argc, char * argv[]) {
     std::cerr << "Loading Succeed!" << std::endl;
     // ================================================================================================================================
 
-
+// TODO, finish
     freopen(result_file_view,"a",stdout);
     
     IVFRN<DIM, BB> ivf;

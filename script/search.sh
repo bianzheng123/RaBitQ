@@ -1,7 +1,7 @@
 
 
 username='bianzheng'
-dataset='sift'
+dataset='siftsmall'
 C=4096
 B=128
 D=128
