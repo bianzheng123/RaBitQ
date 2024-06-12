@@ -8,3 +8,4 @@
 /results/sift
 .idea
 *.pyc
+/cmake-build-debug/
