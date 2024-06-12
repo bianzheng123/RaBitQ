@@ -1,0 +1,10 @@
+/src/eigen-3.4.0/
+/src/eigen-3.4.0.tar.gz
+/src/Eigen/
+/bin/index_sift
+/bin/search_sift
+/data/sift
+/data/siftsmall
+/results/sift
+.idea
+*.pyc

@@ -1,0 +1,23 @@
+how to install:
+1. download the eigen library, use only the src file on /src/Eigen
+2. download sift and siftsmall dataset on data/
+3. run ivf.py, then you get:
+
+sift_centroid_4096.fvecs
+sift_cluster_id_4096.ivecs
+sift_dist_to_centroid_4096.fvecs
+
+4. run rabitq.py, then you get:
+
+./sift/RandCentroid_C4096_B128.fvecs
+./sift/RandNet_C4096_B128.Ivecs
+./sift/x0_C4096_B128.fvecs
+./sift/P_C4096_B128.fvecs
+
+5. run script/index.sh, then you get:
+ivfrabitq4096_B128.index at data/sift/
+index_sift at bin/
+
+6. run script/search.sh, then you get:
+search_sift at bin/
+log result of sift at results/
